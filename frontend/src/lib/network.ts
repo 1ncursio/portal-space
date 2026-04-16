@@ -107,7 +107,7 @@ class NetworkClient {
 					if (msg.type === 'error') {
 						if (!settled) {
 							settled = true
-							reject(new Error(msg.message))
+							reject(new WebSocketError(msg.message ?? 'Server error'))
 						}
 						return
 					}
@@ -139,7 +139,7 @@ class NetworkClient {
 			this.ws.onerror = () => {
 				if (!settled) {
 					settled = true
-					reject(new Error('WebSocket connection failed'))
+					reject(new WebSocketError('WebSocket connection failed'))
 				}
 			}
 
@@ -151,7 +151,7 @@ class NetworkClient {
 				this.connectTimeoutId = undefined
 				if (!settled) {
 					settled = true
-					reject(new Error('Connection timeout'))
+					reject(new ConnectionTimeoutError(5000))
 				}
 			}, 5000)
 		})
