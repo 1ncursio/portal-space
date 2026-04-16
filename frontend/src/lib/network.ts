@@ -14,6 +14,7 @@ import type {
 	ActionMessage,
 	ChatImage,
 } from './types'
+import { parseOutgoingMessage } from './schemas/messages'
 import { DEFAULT_COLORS } from './game/palette-swap'
 
 type MessageHandler = (msg: OutgoingMessage) => void
@@ -78,7 +79,13 @@ class NetworkClient {
 
 			this.ws.onmessage = (event: MessageEvent) => {
 				try {
-					const msg: OutgoingMessage = JSON.parse(event.data)
+					const raw: unknown = JSON.parse(event.data)
+					const decoded = parseOutgoingMessage(raw)
+					if (decoded._tag === 'error') {
+						console.warn('[network] message decode error:', decoded.error.error)
+					}
+					// Use validated message if decode succeeded, fall back to raw for graceful degradation
+					const msg = (decoded._tag === 'ok' ? decoded.message : raw) as OutgoingMessage
 
 					if (msg.type === 'snapshot') {
 						if (!settled) {
