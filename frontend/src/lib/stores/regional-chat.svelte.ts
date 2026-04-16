@@ -27,23 +27,18 @@ class RegionalChatStore {
 	}): void {
 		if (!text && !image) return
 
-		const updated = [
-			...this.regionalMessages,
-			{
-				senderId,
-				nickname,
-				nicknameColor,
-				text,
-				image,
-				isSystem,
-				timestamp: Date.now(),
-				channel: 'regional' as ChatChannel,
-			},
-		]
-		if (updated.length > MAX_REGIONAL_MESSAGES) {
-			this.regionalMessages = updated.slice(updated.length - MAX_REGIONAL_MESSAGES)
-		} else {
-			this.regionalMessages = updated
+		this.regionalMessages.push({
+			senderId,
+			nickname,
+			nicknameColor,
+			text,
+			image,
+			isSystem,
+			timestamp: Date.now(),
+			channel: 'regional' as ChatChannel,
+		})
+		if (this.regionalMessages.length > MAX_REGIONAL_MESSAGES) {
+			this.regionalMessages.splice(0, this.regionalMessages.length - MAX_REGIONAL_MESSAGES)
 		}
 	}
 

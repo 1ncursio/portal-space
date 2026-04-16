@@ -30,23 +30,24 @@ class GameStore {
 	}): void {
 		if (!text && !image) return
 
-		const updated = [
-			...this.chatMessages,
-			{ senderId, nickname, nicknameColor, text, image, isSystem: false, timestamp: Date.now() },
-		]
-		if (updated.length > MAX_CHAT_MESSAGES) {
-			this.chatMessages = updated.slice(updated.length - MAX_CHAT_MESSAGES)
-		} else {
-			this.chatMessages = updated
+		this.chatMessages.push({
+			senderId,
+			nickname,
+			nicknameColor,
+			text,
+			image,
+			isSystem: false,
+			timestamp: Date.now(),
+		})
+		if (this.chatMessages.length > MAX_CHAT_MESSAGES) {
+			this.chatMessages.splice(0, this.chatMessages.length - MAX_CHAT_MESSAGES)
 		}
 	}
 
 	addSystemMessage(text: string): void {
-		const updated = [...this.chatMessages, { text, isSystem: true, timestamp: Date.now() }]
-		if (updated.length > MAX_CHAT_MESSAGES) {
-			this.chatMessages = updated.slice(updated.length - MAX_CHAT_MESSAGES)
-		} else {
-			this.chatMessages = updated
+		this.chatMessages.push({ text, isSystem: true, timestamp: Date.now() })
+		if (this.chatMessages.length > MAX_CHAT_MESSAGES) {
+			this.chatMessages.splice(0, this.chatMessages.length - MAX_CHAT_MESSAGES)
 		}
 	}
 }
